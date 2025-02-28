@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }} 
+  annotations:
+    dev.okteto.com/generate-host: "todo"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "chart.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}

@@ -1,0 +1,6 @@
+// Ignore all other files and folders
+**
+
+// Synch chart folder and readme
+!chart
+!cockroach/README.md

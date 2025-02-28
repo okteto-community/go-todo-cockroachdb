@@ -1,0 +1,7 @@
+apiVersion: v2
+name: todolist
+description: A Todo list powered by Cockroach DB
+
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
