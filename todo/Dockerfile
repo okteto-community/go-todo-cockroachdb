@@ -9,6 +9,7 @@ RUN go build -o app
 FROM debian:bookworm AS prod
 
 WORKDIR /app
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app/app /app/app
 COPY --from=builder /app/static /app/static
 EXPOSE 8080
