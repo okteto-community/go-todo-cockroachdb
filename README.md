@@ -1,13 +1,13 @@
-# Deploy a CockroachDB Cluster with Okteto
+# Develop with Okteto, Go, and CockroachDB Cloud
 
-This repository demonstrates how to deploy and use a **CockroachDB Cloud** cluster within an **Okteto** development environment.
+This repository demonstrates how to deploy a fully configured development environment that uses Go and **CockroachDB Cloud** with a **Okteto**.
 
 ## Prerequisites
 
 Before deploying, ensure you have the following:
 
-- An **Okteto** account. Sign up for a [30-day self-hosted free trial](https://www.okteto.com) if you don’t have one.
-- A **CockroachDB Cloud** account with a running cluster.
+- Access to an **Okteto** instance. Sign up for a [30-day self-hosted free trial](https://www.okteto.com) if you don’t have one.
+- A **CockroachDB Cloud** account with a running cluster. [Get started for free](https://cockroachlabs.cloud/).
 - The **CockroachDB CLI** installed. Follow the [installation guide](https://www.cockroachlabs.com/docs/stable/install-cockroachdb.html).
 - The **Okteto CLI** installed. Refer to the [Okteto documentation](https://www.okteto.com/docs/core/getting-started/) for installation steps.
 
