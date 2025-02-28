@@ -1,2 +1,5 @@
-.env
-.git
+// Ignore all other files and folders
+**
+
+// Synch chart folder
+!chart

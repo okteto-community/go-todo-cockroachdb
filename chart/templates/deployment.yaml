@@ -14,6 +14,7 @@ spec:
       {{- with .Values.podAnnotations }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/config-ca: {{ include (print $.Template.BasePath "/secret-ca.yaml") . | sha256sum }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -32,9 +33,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image }}"
           imagePullPolicy: {{ .Values.imagePullPolicy }}
-          envFrom:
-            - secretRef:
-                name: {{ include "chart.fullname" . }}
+          env:
+          - name: DSN
+            value: "{{ .Values.connectionString }}"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

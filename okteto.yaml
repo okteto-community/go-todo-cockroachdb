@@ -14,22 +14,40 @@ deploy:
   commands:
     - name: create database
       command: |
-        curl --create-dirs -o ".postgresql/root.crt" "https://cockroachlabs.cloud/clusters/${COCKROACH_CLUSTERID}/cert"
-        cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/${COCKROACH_DATABASE}?sslmode=verify-full" -e "CREATE DATABASE IF NOT EXISTS todo-${OKTETO_NAMESPACE};" --certs-dir=".postgresql/root.crt"
+        curl -s --create-dirs -o ".postgresql/root.crt" "https://cockroachlabs.cloud/clusters/${COCKROACH_CLUSTERID}/cert"
+        databaseName="todo_${OKTETO_NAMESPACE}"
+        cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/${COCKROACH_DATABASE}?sslmode=verify-full" -e "CREATE DATABASE IF NOT EXISTS todo_${OKTETO_NAMESPACE};" --certs-dir=".postgresql"
+        
+        # make the values available to the following steps and the dashboard
+        echo "OKTETO_EXTERNAL_COCKROACHDB_ENDPOINTS_DB_URL=https://cockroachlabs.cloud/cluster/${COCKROACH_CLUSTERID}/overview" >> "$OKTETO_ENV"
+        echo "DATABASE_NAME=${databaseName}" >> "$OKTETO_ENV"
+         
     - name: deploy application
-      command: helm upgrade --install todo ./chart --set image=${OKTETO_BUILD_TODO_IMAGE} --set connection_string="postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/todo-${OKTETO_NAMESPACE}?sslmode=verify-full"
+      command: |
+        connectionString="postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/${DATABASE_NAME}?sslmode=verify-full"
+        caCert="$(cat '.postgresql/root.crt')"
+        
+        helm upgrade --install todo ./chart --set image="${OKTETO_BUILD_TODO_IMAGE}" --set caCert="$caCert" --set connectionString="$connectionString"
+        
+
 destroy:
   image: ${OKTETO_BUILD_COCKROACH_IMAGE}
   commands:
     - name: destroy database
       command: |
         curl --create-dirs -o ".postgresql/root.crt" "https://cockroachlabs.cloud/clusters/${COCKROACH_CLUSTERID}/cert"
-        cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/${COCKROACH_DATABASE}?sslmode=verify-full" -e "DROP DATABASE IF EXISTS todo-${OKTETO_NAMESPACE} CASCADE;" --certs-dir=".postgresql/root.crt"
+        cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/${COCKROACH_DATABASE}?sslmode=verify-full" -e "DROP DATABASE IF EXISTS $DATABASE_NAME CASCADE;" --certs-dir=".postgresql"
+
+dev:
+  todo-todolist:
+    command: bash
+    image: ${OKTETO_BUILD_BUILDER_IMAGE}
+    sync:
+    - todo:/app
 
 external:
   cockroachdb:
     icon: database
     notes: README.md
     endpoints:
-      - name: database
-        url: "https://cockroachlabs.cloud/"
+      - name: db
