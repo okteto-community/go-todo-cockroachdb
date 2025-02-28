@@ -16,11 +16,12 @@ deploy:
       command: |
         set -e
         curl -s --create-dirs -o ".postgresql/root.crt" "https://cockroachlabs.cloud/clusters/${COCKROACH_CLUSTERID}/cert"
-        sanitizedNamespace=$(echo $OKTETO_NAMESPACE | sed "s/-/_/g")
         
-        username="todo_${sanitizedNamespace}"
-        databaseName="todo_${sanitizedNamespace}"
-        password=$(tr -dc 'A-Za-z0-9!?=' < /dev/urandom | head -c 10)
+        sanitizedNamespace=$(echo $OKTETO_NAMESPACE | sed "s/-/_/g")
+        username="okt_${sanitizedNamespace}"
+        databaseName="okt_${sanitizedNamespace}"
+        password=$(tr -dc 'A-Za-z0-9!=+' < /dev/urandom | head -c 10)
+
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "CREATE DATABASE IF NOT EXISTS $databaseName;" --certs-dir=".postgresql"
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "CREATE USER IF NOT EXISTS $username WITH LOGIN PASSWORD '$password'" --certs-dir=".postgresql"
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "GRANT ALL ON DATABASE $databaseName to $username" --certs-dir=".postgresql"
@@ -46,9 +47,10 @@ destroy:
       command: |
         set -e
         sanitizedNamespace=$(echo $OKTETO_NAMESPACE | sed "s/-/_/g")
-
-        username="todo_${sanitizedNamespace}"
-        databaseName="todo_${sanitizedNamespace}"
+        
+        username="okt_${sanitizedNamespace}"
+        databaseName="okt_${sanitizedNamespace}"
+        
         curl -s --create-dirs -o ".postgresql/root.crt" "https://cockroachlabs.cloud/clusters/${COCKROACH_CLUSTERID}/cert"
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "DROP DATABASE IF EXISTS $databaseName CASCADE;" --certs-dir=".postgresql"
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "DROP USER $username;" --certs-dir=".postgresql"
