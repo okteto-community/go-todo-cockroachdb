@@ -20,7 +20,6 @@ Before deploying, you need to create the following **Okteto environment variable
 | `COCKROACH_USERNAME`     | Your CockroachDB Cloud username (must have permissions to create databases and manage user privileges). |
 | `COCKROACH_PASSWORD`     | Your CockroachDB password. |
 | `COCKROACH_CLUSTERID`    | The ID of your CockroachDB cluster (used to download the cluster’s CA certificate). |
-| `COCKROACH_DATABASE`     | The name of the authentication database (eg `defaultdb`). |
 | `COCKROACH_HOST` | The hostname of your cluster (eg. `okteto-environments-5313.jxf.gcp-us-west2.cockroachlabs.cloud`)
 | `COCKROACH_PORT` | The port of your cluster (eg. `26257`)
 
