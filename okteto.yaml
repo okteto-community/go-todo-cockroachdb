@@ -48,6 +48,6 @@ dev:
 external:
   cockroachdb:
     icon: database
-    notes: README.md
+    notes: cockroach/README.md
     endpoints:
       - name: db
