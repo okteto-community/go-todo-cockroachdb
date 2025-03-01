@@ -26,7 +26,6 @@ deploy:
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "CREATE USER IF NOT EXISTS $username WITH LOGIN PASSWORD '$password'" --certs-dir=".postgresql"
         cockroach sql --url "postgresql://${COCKROACH_USERNAME}:${COCKROACH_PASSWORD}@${COCKROACH_HOST}:${COCKROACH_PORT}/?sslmode=verify-full" -e "GRANT ALL ON DATABASE $databaseName to $username" --certs-dir=".postgresql"
 
-
         # make the values available to the following steps and the dashboard
         echo "OKTETO_EXTERNAL_COCKROACHDB_ENDPOINTS_DB_URL=https://cockroachlabs.cloud/cluster/${COCKROACH_CLUSTERID}/overview" >> "$OKTETO_ENV"
         echo "DATABASE_NAME=${databaseName}" >> "$OKTETO_ENV"
